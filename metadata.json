@@ -1,6 +1,0 @@
-{
-  "name": "عوني | المستشار الرقمي لمنصة مُنتجي العُمانية",
-  "description": "الروبوت الاستشاري والوجه الرقمي التفاعلي لمنصة مُنتجي لتمكين المشاريع الوطنية والأسر المنتجة في سلطنة عُمان تحت مظلة رؤية عُمان 2040.",
-  "requestFramePermissions": ["microphone"],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
-}
