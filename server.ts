@@ -3,9 +3,14 @@ import http from "http";
 import { WebSocketServer, WebSocket } from "ws";
 import { GoogleGenAI, ThinkingLevel, Modality, LiveServerMessage } from "@google/genai";
 import path from "path";
+import { fileURLToPath } from "url";
 import dotenv from "dotenv";
 
 dotenv.config();
+
+// إعداد مسار المجلد للتوافق مع ES Modules في Node.js و Render
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3000;
@@ -94,9 +99,9 @@ function getFallbackAwniResponse(message: string): string {
     return `يسعدني جداً تقديم التحليل المالي لمشروعك بالريال العُماني (OMR):
 
 بناءً على التقديرات الأولية:
-• **إجمالي رأس المال المطلوب:** 4,500 ر.ع. موزع بين المعدات والمواد والتسويق.
-• **نقطة التعادل الشهرية:** 90 وحدة (1,080 ر.ع. مبيعات لتغطية التكاليف).
-• **صافي الربح المتوقع:** 620 ر.ع. شهرياً عند استهداف 150 وحدة.
+- **إجمالي رأس المال المطلوب:** 4,500 ر.ع. موزع بين المعدات والمواد والتسويق.
+- **نقطة التعادل الشهرية:** 90 وحدة (1,080 ر.ع. مبيعات لتغطية التكاليف).
+- **صافي الربح المتوقع:** 620 ر.ع. شهرياً عند استهداف 150 وحدة.
 
 تم تحديث لوحة المؤشرات البيانية أدناه لعرض توزيع الميزانية وهيكل رأس المال. هل تود تعديل أي بند؟
 \`\`\`json
@@ -393,9 +398,9 @@ app.post("/api/feasibility-review", async (req, res) => {
 
     if (!reviewText) {
       reviewText = `يا هلا والله بك! راجعت ميزانية مشروع "${projectName || "مشروعك العُماني"}":
-• هامش مساهمة الوحدة: ${unitMargin.toFixed(2)} ر.ع. (ممتاز لدعم الربحية).
-• نقطة التعادل: تحتاج بيع ${breakEvenUnits} وحدة شهرياً (${breakEvenRevenue?.toFixed(2)} ر.ع.) لتغطية التكاليف كاملة.
-• صافي الربح الشهري المتوقع: ${expectedProfit.toFixed(2)} ر.ع. عند تحقيق هدف ${mt} وحدة.
+- هامش مساهمة الوحدة: ${unitMargin.toFixed(2)} ر.ع. (ممتاز لدعم الربحية).
+- نقطة التعادل: تحتاج بيع ${breakEvenUnits} وحدة شهرياً (${breakEvenRevenue?.toFixed(2)} ر.ع.) لتغطية التكاليف كاملة.
+- صافي الربح الشهري المتوقع: ${expectedProfit.toFixed(2)} ر.ع. عند تحقيق هدف ${mt} وحدة.
 
 نصيحة عوني: استفد من ترخيص الأعمال المنزلية وبطاقة ريادة 2026 لتخفيض الرسوم والتكاليف الثابتة، واعرض منتجاتك مباشرة في سوق مُنتجي الوطني.
 تحب نربط دراستك مع خيارات تمويل بنك التنمية العماني الميسرة بدون فوائد؟`;
