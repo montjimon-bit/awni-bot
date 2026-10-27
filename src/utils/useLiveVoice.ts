@@ -5,14 +5,11 @@ function float32ToPcmBase64(input: Float32Array): string {
   const buffer = new ArrayBuffer(input.length * 2);
   const view = new DataView(buffer);
   for (let i = 0; i < input.length; i++) {
-    // Clamp to [-1, 1]
     const s = Math.max(-1, Math.min(1, input[i]));
-    // Convert to 16-bit signed integer
     const val = s < 0 ? s * 0x8000 : s * 0x7fff;
-    view.setInt16(i * 2, val, true); // Little-endian
+    view.setInt16(i * 2, val, true);
   }
 
-  // Convert ArrayBuffer to binary string
   let binary = "";
   const bytes = new Uint8Array(buffer);
   const len = bytes.byteLength;
@@ -87,25 +84,21 @@ export function useLiveVoice(options: UseLiveVoiceOptions = {}) {
   }, []);
 
   const disconnect = useCallback(() => {
-    // 1. Close WebSocket
     if (wsRef.current) {
       wsRef.current.close();
       wsRef.current = null;
     }
 
-    // 2. Stop microphone tracks
     if (mediaStreamRef.current) {
       mediaStreamRef.current.getTracks().forEach((track) => track.stop());
       mediaStreamRef.current = null;
     }
 
-    // 3. Cancel animation loop
     if (animLoopRef.current) {
       cancelAnimationFrame(animLoopRef.current);
       animLoopRef.current = null;
     }
 
-    // 4. Close AudioContexts
     if (inputAudioCtxRef.current) {
       inputAudioCtxRef.current.close().catch(() => {});
       inputAudioCtxRef.current = null;
@@ -132,38 +125,36 @@ export function useLiveVoice(options: UseLiveVoiceOptions = {}) {
     setErrorMsg(null);
 
     try {
-      // 1. Request microphone access
+      // 1. Request microphone access (optimized for built-in PC/Laptop mic in Kiosk exhibition mode)
       const stream = await navigator.mediaDevices.getUserMedia({
         audio: {
           channelCount: 1,
           sampleRate: 16000,
           echoCancellation: true,
           noiseSuppression: true,
-          autoGainControl: true,
+          autoGainControl: true, // مهم جداً لرفع صوت الزائر القريب من اللابتوب في المهرجانات
         },
       });
       mediaStreamRef.current = stream;
 
-      // 2. Create Input AudioContext (16kHz for Live API)
+      // 2. Create Input AudioContext
       const AudioCtxClass = window.AudioContext || (window as any).webkitAudioContext;
       const inputCtx = new AudioCtxClass({ sampleRate: 16000 });
       inputAudioCtxRef.current = inputCtx;
       await inputCtx.resume();
 
-      // 3. Create Output AudioContext (24kHz for Live API model response) with AnalyserNode for Lip-Sync
+      // 3. Create Output AudioContext
       const outputCtx = new AudioCtxClass({ sampleRate: 24000 });
       outputAudioCtxRef.current = outputCtx;
       await outputCtx.resume();
       nextPlayTimeRef.current = outputCtx.currentTime;
 
-      // AnalyserNode for real-time mouth movement
       const outputAnalyser = outputCtx.createAnalyser();
       outputAnalyser.fftSize = 64;
       outputAnalyser.smoothingTimeConstant = 0.5;
       outputAnalyser.connect(outputCtx.destination);
       outputAnalyserRef.current = outputAnalyser;
 
-      // Real-time output audio frequency & volume loop for mouth lip-sync
       const freqData = new Uint8Array(outputAnalyser.frequencyBinCount);
       const monitorOutputAudio = () => {
         if (!outputAnalyserRef.current) return;
@@ -203,7 +194,6 @@ export function useLiveVoice(options: UseLiveVoiceOptions = {}) {
         setIsConnected(true);
         setIsConnecting(false);
 
-        // Setup microphone capture processor
         const source = inputCtx.createMediaStreamSource(stream);
         const processor = inputCtx.createScriptProcessor(4096, 1, 1);
 
@@ -211,7 +201,6 @@ export function useLiveVoice(options: UseLiveVoiceOptions = {}) {
           if (ws.readyState !== WebSocket.OPEN) return;
           const channelData = e.inputBuffer.getChannelData(0);
 
-          // Calculate RMS volume for live audio visualizer
           let sumSquares = 0;
           for (let i = 0; i < channelData.length; i++) {
             sumSquares += channelData[i] * channelData[i];
@@ -219,7 +208,6 @@ export function useLiveVoice(options: UseLiveVoiceOptions = {}) {
           const rms = Math.sqrt(sumSquares / channelData.length);
           setLiveVolume(Math.min(1, rms * 5));
 
-          // Convert to PCM Base64 and send
           const base64Audio = float32ToPcmBase64(channelData);
           ws.send(JSON.stringify({ audio: base64Audio }));
         };
@@ -251,17 +239,14 @@ export function useLiveVoice(options: UseLiveVoiceOptions = {}) {
             options.onTurnComplete?.();
           }
 
-          // Play incoming audio chunks through the AnalyserNode at 24kHz
           if (msg.audio && outputAudioCtxRef.current && outputAnalyserRef.current) {
             const ctx = outputAudioCtxRef.current;
             const analyser = outputAnalyserRef.current;
             const audioBuffer = base64PcmToAudioBuffer(msg.audio, ctx);
             const sourceNode = ctx.createBufferSource();
             sourceNode.buffer = audioBuffer;
-            // Connect to AnalyserNode which connects to destination!
             sourceNode.connect(analyser);
 
-            // Schedule seamlessly
             const startTime = Math.max(ctx.currentTime, nextPlayTimeRef.current);
             sourceNode.start(startTime);
             nextPlayTimeRef.current = startTime + audioBuffer.duration;
@@ -292,7 +277,7 @@ export function useLiveVoice(options: UseLiveVoiceOptions = {}) {
         console.error("Live WebSocket error:", err);
         setIsConnected(false);
         setIsConnecting(false);
-        setErrorMsg("تعذر الاتصال بـ Live API. يرجى التحقق من الاتصال.");
+        setErrorMsg("تعذر الاتصال بـ Live API. يرجى التحقق من الشبكة.");
       };
 
       ws.onclose = () => {
@@ -303,12 +288,11 @@ export function useLiveVoice(options: UseLiveVoiceOptions = {}) {
       console.error("Live setup error:", err);
       setIsConnected(false);
       setIsConnecting(false);
-      setErrorMsg(err.message || "فشل الاتصال بالميكروفون");
+      setErrorMsg("يرجى السماح للمتصفح بالوصول إلى ميكروفون اللابتوب المدمج");
       options.onError?.(err.message || "Microphone access error");
     }
   }, [disconnect, options, stopAllPlayback]);
 
-  // Cleanup on unmount
   useEffect(() => {
     return () => {
       disconnect();
