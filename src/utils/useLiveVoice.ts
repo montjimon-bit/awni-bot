@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 
-// Helper: Float32Array (-1.0 to 1.0) to 16-bit PCM Base64 string
+// تحويل Float32 إلى 16-bit PCM Base64
 function float32ToPcmBase64(input: Float32Array): string {
   const buffer = new ArrayBuffer(input.length * 2);
   const view = new DataView(buffer);
@@ -19,7 +19,7 @@ function float32ToPcmBase64(input: Float32Array): string {
   return btoa(binary);
 }
 
-// Helper: Base64 16-bit PCM (24kHz) to AudioBuffer
+// تحويل Base64 24kHz PCM إلى AudioBuffer
 function base64PcmToAudioBuffer(
   base64: string,
   audioCtx: AudioContext
@@ -66,6 +66,9 @@ export function useLiveVoice(options: UseLiveVoiceOptions = {}) {
   const nextPlayTimeRef = useRef<number>(0);
   const speakingTimerRef = useRef<any>(null);
   const animLoopRef = useRef<number | null>(null);
+  
+  // مرجع لتتبع ما إذا كان عوني يتكلم حالياً لمنع الميكروفون من مقاطعة نفسه
+  const isSpeakingRef = useRef<boolean>(false);
 
   const stopAllPlayback = useCallback(() => {
     activeSourcesRef.current.forEach((src) => {
@@ -78,6 +81,7 @@ export function useLiveVoice(options: UseLiveVoiceOptions = {}) {
     if (outputAudioCtxRef.current) {
       nextPlayTimeRef.current = outputAudioCtxRef.current.currentTime;
     }
+    isSpeakingRef.current = false;
     setIsBotSpeaking(false);
     setSpeechVolume(0);
     setSpeechBands([0, 0, 0, 0, 0, 0, 0]);
@@ -125,25 +129,25 @@ export function useLiveVoice(options: UseLiveVoiceOptions = {}) {
     setErrorMsg(null);
 
     try {
-      // 1. Request microphone access (optimized for built-in PC/Laptop mic in Kiosk exhibition mode)
+      // 1. طلب الميكروفون مع تفعيل عزل الصدى المتقدم الخاص بسماعات وميكروفون الشاشة/اللابتوب
       const stream = await navigator.mediaDevices.getUserMedia({
         audio: {
           channelCount: 1,
           sampleRate: 16000,
           echoCancellation: true,
           noiseSuppression: true,
-          autoGainControl: true, // مهم جداً لرفع صوت الزائر القريب من اللابتوب في المهرجانات
+          autoGainControl: true,
         },
       });
       mediaStreamRef.current = stream;
 
-      // 2. Create Input AudioContext
+      // 2. إعداد معالج الصوت المدخل
       const AudioCtxClass = window.AudioContext || (window as any).webkitAudioContext;
       const inputCtx = new AudioCtxClass({ sampleRate: 16000 });
       inputAudioCtxRef.current = inputCtx;
       await inputCtx.resume();
 
-      // 3. Create Output AudioContext
+      // 3. إعداد معالج الصوت المخرج
       const outputCtx = new AudioCtxClass({ sampleRate: 24000 });
       outputAudioCtxRef.current = outputCtx;
       await outputCtx.resume();
@@ -184,7 +188,7 @@ export function useLiveVoice(options: UseLiveVoiceOptions = {}) {
       };
       animLoopRef.current = requestAnimationFrame(monitorOutputAudio);
 
-      // 4. Connect WebSocket
+      // 4. فتح اتصال الـ WebSocket
       const protocol = location.protocol === "https:" ? "wss:" : "ws:";
       const wsUrl = `${protocol}//${location.host}/live`;
       const ws = new WebSocket(wsUrl);
@@ -199,6 +203,10 @@ export function useLiveVoice(options: UseLiveVoiceOptions = {}) {
 
         processor.onaudioprocess = (e) => {
           if (ws.readyState !== WebSocket.OPEN) return;
+
+          // حماية جوهرية: أثناء كلام عوني، نخفض حساسية الإرسال لمنع صوته من مقاطعة نفسه!
+          if (isSpeakingRef.current) return;
+
           const channelData = e.inputBuffer.getChannelData(0);
 
           let sumSquares = 0;
@@ -226,7 +234,8 @@ export function useLiveVoice(options: UseLiveVoiceOptions = {}) {
             options.onError?.(msg.error);
           }
 
-          if (msg.interrupted) {
+          // تم تعطيل المقاطعة العشوائية لمنع عوني من السكوت في منتصف الجملة
+          if (msg.interrupted && !isSpeakingRef.current) {
             stopAllPlayback();
             options.onInterrupted?.();
           }
@@ -239,6 +248,7 @@ export function useLiveVoice(options: UseLiveVoiceOptions = {}) {
             options.onTurnComplete?.();
           }
 
+          // تشغيل وتتابع حزم الصوت بسلاسة بدون فجوات
           if (msg.audio && outputAudioCtxRef.current && outputAnalyserRef.current) {
             const ctx = outputAudioCtxRef.current;
             const analyser = outputAnalyserRef.current;
@@ -252,19 +262,22 @@ export function useLiveVoice(options: UseLiveVoiceOptions = {}) {
             nextPlayTimeRef.current = startTime + audioBuffer.duration;
 
             activeSourcesRef.current.push(sourceNode);
+            isSpeakingRef.current = true;
             setIsBotSpeaking(true);
 
             sourceNode.onended = () => {
               activeSourcesRef.current = activeSourcesRef.current.filter((s) => s !== sourceNode);
               if (activeSourcesRef.current.length === 0) {
                 clearTimeout(speakingTimerRef.current);
+                // زيادة مهلة الانتظار لضمان عدم قطع الصوت في الفواصل القصيرة بين الكلمات
                 speakingTimerRef.current = setTimeout(() => {
                   if (activeSourcesRef.current.length === 0) {
+                    isSpeakingRef.current = false;
                     setIsBotSpeaking(false);
                     setSpeechVolume(0);
                     setSpeechBands([0, 0, 0, 0, 0, 0, 0]);
                   }
-                }, 120);
+                }, 350);
               }
             };
           }
@@ -277,7 +290,7 @@ export function useLiveVoice(options: UseLiveVoiceOptions = {}) {
         console.error("Live WebSocket error:", err);
         setIsConnected(false);
         setIsConnecting(false);
-        setErrorMsg("تعذر الاتصال بـ Live API. يرجى التحقق من الشبكة.");
+        setErrorMsg("تعذر الاتصال بـ Live API.");
       };
 
       ws.onclose = () => {
@@ -288,7 +301,7 @@ export function useLiveVoice(options: UseLiveVoiceOptions = {}) {
       console.error("Live setup error:", err);
       setIsConnected(false);
       setIsConnecting(false);
-      setErrorMsg("يرجى السماح للمتصفح بالوصول إلى ميكروفون اللابتوب المدمج");
+      setErrorMsg("يرجى السماح بالوصول إلى ميكروفون الجهاز");
       options.onError?.(err.message || "Microphone access error");
     }
   }, [disconnect, options, stopAllPlayback]);
