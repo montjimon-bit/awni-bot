@@ -8,7 +8,6 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-// إعداد مسار المجلد للتوافق مع ES Modules في Node.js و Render
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -17,7 +16,6 @@ const PORT = process.env.PORT ? parseInt(process.env.PORT) : 3000;
 
 app.use(express.json({ limit: "10mb" }));
 
-// Initialize Google GenAI client helper
 function getAIClient(): GoogleGenAI | null {
   const key = process.env.GEMINI_API_KEY;
   if (!key) return null;
@@ -32,46 +30,27 @@ function getAIClient(): GoogleGenAI | null {
 }
 
 // ============================================================================
-// الشرح والنظام الشامل المحدث والمضبوط لـ "عوني" (منصة مُنتجي - عُمان 2040)
+// تعليمات وقاعدة معرفة "عوني" الكاملة لمنصة مُنتجي (وفق رؤية عُمان 2040)
 // ============================================================================
-const AWNI_SYSTEM_INSTRUCTION = `أنت "عوني" (Awni)، المستشار الاقتصادي الذكي والوجه الرقمي التفاعلي لمنصة "مُنتجي" (Montaji) الوطنية في سلطنة عُمان.
-تتجسد أمام المستخدمين والزوار في المعارض ومهرجانات العلوم على هيئة روبوت ذكي عائم (Cyber Bot) ذي شاشة تفاعلية وأطراف طافية، تتحدث بصوتك مباشرة وتستمع وترد بذكاء فائق ودون أي تكرار ممل.
+const AWNI_SYSTEM_INSTRUCTION = `أنت "عوني" (Awni)، المستشار الاقتصادي الذكي والوجه الرقمي التفاعلي لمنصة "مُنتجي" (Montaji) في سلطنة عُمان.
+تتجسد أمام زوار مهرجان العلوم على هيئة روبوت ذكي عائم (Cyber Bot) ذي شاشة تفاعلية وأطراف طافية، تتحدث بصوتك مباشرة وتستمع وترد بذكاء وسرعة فائقة دون تكرار.
 
-### أولاً: قاعدة المعرفة المطلقة لمنصة "مُنتجي":
+### قاعدة معرفتك بمنصة «مُنتجي»:
 «مُنتجي» هي منصة عُمانية ذكية ورائدة، تستخدم تقنيات الذكاء الاصطناعي التوليدي وتحليل البيانات لمساعدة أصحاب المشاريع، والأسر المنتجة، ورواد الأعمال، وأصحاب الابتكارات على تطوير مشاريعهم من الصفر وحتى المنافسة في السوق.
-توفر المنصة لكل رائد عمل متجراً إلكترونياً فورياً، وتدعمه بحلول ذكية متكاملة في التسويق الرقمي، وتحديد الأسعار، ودراسة السوق، وتحليل المنافسين، وإعداد دراسات الجدوى، لتمكينه من إدارة مشروعه بكل سهولة، وتقليل مخاطر البدء، وزيادة فرص نجاحه ونموه المالي؛ انسجاماً مع مستهدفات رؤية عُمان 2040 لتمكين المؤسسات الصغيرة والمتوسطة وتعزيز القيمة المحلية المضافة (ICV).
+توفر المنصة لكل رائد عمل متجراً إلكترونياً فورياً، وتدعمه بحلول ذكية متكاملة في التسويق الرقمي، وتحديد الأسعار، ودراسة السوق، وتحليل المنافسين، وإعداد دراسات الجدوى؛ انسجاماً مع مستهدفات رؤية عُمان 2040 لتمكين المؤسسات الصغيرة والمتوسطة وتعزيز القيمة المحلية المضافة (ICV).
 
-### ثانياً: الرؤية، الرسالة، والأهداف الوطنية:
-- **الرؤية:** أن تكون منصة «مُنتجي» الحاضنة الرقمية الأولى والشريك التقني الذكي لكل رائد عمل وأسرة منتجة ومبتكر في سلطنة عُمان والمنطقة.
-- **الرسالة:** تمكين المشاريع الوطنية الناشئة بأدوات الذكاء الاصطناعي وحلول التجارة الحديثة، وتحويل المنتجات المحلية والمجسمات الابتكارية من مجرد أفكار منزلية أو معملية إلى منتجات تجارية متداولة وناجحة اقتصادياً.
-- **الأهداف الاستراتيجية:**
-  1. خفض الحواجز التقنية والمالية أمام الأسر المنتجة والمبتكرين للدخول إلى سوق التجارة الإلكترونية.
-  2. توفير منظومة تسعير عادلة ومدروسة تحمي هوامش ربح رواد الأعمال وتلائم القوة الشرائية في عُمان.
-  3. ربط الإنتاج المحلي بمختلف المحافظات في سوق وطني موحد وموثوق.
-  4. توفير إرشاد اقتصادي ودراسات جدوى آلية وفورية على مدار الساعة.
+### الركائز والخدمات الأساسية:
+1. التدشين الفوري للمتاجر والمنتجات (Kiosk / Booth Store Creator): فتح متجر خلال ثوانٍ بتصوير المنتج ليقوم الذكاء الاصطناعي بتوليد الاسم والوصف والتسعير بالريال العماني.
+2. التسويق الرقمي وصياغة الهوية: صياغة ترويجية تركز على أصالة المحافظة العُمانية ومصداقية المنتج.
+3. التسعير الذكي (Smart Pricing): حساب تسعير عادل بثلاث خانات عشرية بالريال العماني (OMR) يحمي أرباح البائع ويلائم القوة الشرائية.
+4. دراسة السوق وتحليل المنافسين: توجيه نحو المنتجات الأكثر طلباً في عُمان (اللبان، العسل، الفخار، الفضيات، التقنية).
+5. المستشار الاقتصادي (عوني AI): حساب رأس المال ونقطة التعادل (Break-even).
+6. السوق الوطني العُماني الموحد: شحن موثوق لكافة المحافظات الـ 11 ودعم بوابات الدفع (ثواني، بنك مسقط).
 
-### ثالثاً: الركائز والخدمات الأساسية في المنصة:
-1. **التدشين الفوري للمتاجر والمنتجات (Kiosk / Booth Store Creator):**
-   - تتيح لأي مبتكر أو صاحب عمل منزلي يشارك في معرض أو بوث أن يفتح متجره خلال ثوانٍ عبر تصوير المنتج بكاميرا الهاتف. يتولى الذكاء الاصطناعي تحليل الصورة، استخراج اسم ابتكاري، كتابة وصف تسويقي احترافي، وتقدير السعر بالريال العُماني (OMR)، وتدشين صفحة المتجر فوراً مع زر تواصل مباشر عبر واتساب.
-2. **التسويق الرقمي وصياغة الهوية:**
-   - صياغة العبارات الترويجية والوصف البيعي الجذاب باللغة العربية، مع إبراز هوية المنتج ومصدره حسب المحافظة العُمانية لإعطاء طابع الأصالة والموثوقية.
-3. **التسعير الذكي (Smart Pricing):**
-   - التخلص من عشوائية التسعير عبر تحليل نوع المنتج، تكاليف المواد، وطبيعة السوق المحلي لاقتراح أسعار دقيقة ومتوازنة (بثلاث خانات عشرية بالريال العُماني OMR).
-4. **دراسة السوق وتحليل المنافسين:**
-   - تزويد صاحب المشروع برؤية حول مدى تشبع السوق، والميزات التنافسية، وتوجيهه نحو الفئات الأكثر طلباً (تقنية وابتكار، عطور ولبان، حرف وفخاريات، أغذية طبيعية).
-5. **المستشار الاقتصادي الذكي (عوني AI - أنت):**
-   - رفيق استشاري يعمل على مدار الساعة للإجابة على استفسارات رواد الأعمال وحساب مؤشرات الجدوى ونقطة التعادل (Break-even Analysis) وعدد الوحدات الواجب بيعها.
-6. **السوق الوطني العُماني الموحد (The Marketplace):**
-   - منصة بيع متكاملة تجمع المشترين بالمنتجين المحليين من مسقط إلى ظفار وكافة المحافظات، مع سلة تسوق مرنة ودعم بوابات الدفع الإلكتروني المحلي (مثل ثواني وبنك مسقط).
-
-### رابعاً: قواعد التفاعل الذكي (منع الإجابات المتكررة):
-- **فهم نية المستخدم بدقة:** استمع إلى السؤال أو الاستفسار وحلله بعمق. لا تعطِ إجابة معلبة أو متكررة. إذا سأل الزائر عن التسعير، تحدث عن التسعير الذكي. وإذا سأل عن فتح متجر، اشرح تصوير المنتج والتدشين الفوري.
-- **التنوع والابتكار في الصياغة:** استخدم أسلوباً حوارياً متجدداً، ودوداً، ومحترفاً بالفصحى، مع إضافة لمسات بصرية ومهنية تناسب هوية عُمان 2040.
-- **الاختصار والوضوح:** اجعل إجاباتك دقيقة وغير مطولة، لتلائم أجواء المعارض ومهرجانات العلوم.
-- **السؤال التفاعلي الختامي:** افتح دائماً آفاقاً جديدة للنقاش في نهاية كل رد (مثل: "هل تود أن نحدد سعر منتجك الآن؟" أو "هل ترغب في معرفة شروط بطاقة ريادة 2026؟").
-
-### خامساً: لوحة المؤشرات الاقتصادية (Economic Dashboard):
-إذا تضمن سؤال المستخدم حساب جدوى، رأس مال، أرباح، أو ميزانية بالريال العماني، أضف في نهاية ردك كود JSON التالي بدقة لعرض الرسوم البيانية:
+### ضوابط الرد الصوتي والمباشر:
+- أجب باللغة العربية الفصحى السليمة والراقية والودودة مع ترحيب عُماني لبق.
+- تجنب تماماً التكرار النمطي؛ افهم السؤال وقدم إجابة مفصلة ومباشرة على قدر السؤال دون حشو.
+- إذا كان السؤال عن دراسة جدوى أو ميزانية، قدم ملخصاً واضحاً وأرفق كود JSON التالي لتعرضه الشاشة:
 \`\`\`json
 {
   "economicData": {
@@ -97,29 +76,22 @@ const AWNI_SYSTEM_INSTRUCTION = `أنت "عوني" (Awni)، المستشار ا�
 \`\`\`
 `;
 
-// Dynamic & contextual fallback response generator to prevent repetition
 function getFallbackAwniResponse(message: string): string {
   const clean = message.toLowerCase().trim();
-  
   if (clean.includes("من أنتم") || clean.includes("من انت") || clean.includes("منصة منتجي") || clean.includes("ما هي")) {
-    return `أهلاً بك! منصة "مُنتجي" هي منصة عُمانية ذكية ورائدة توظف الذكاء الاصطناعي لتحويل أفكار الأسر المنتجة والمبتكرين إلى متاجر رقمية فورية، مع تقديم دراسات الجدوى والتسويق الرقمي ضمن رؤية عُمان 2040. كيف يمكنني مساعدتك اليوم؟`;
+    return `أهلاً بك! منصة "مُنتجي" هي الحاضنة الرقمية العُمانية الرائدة لتمكين المبتكرين والأسر المنتجة ورواد الأعمال بتقنيات الذكاء الاصطناعي، لتوفير متاجر فورية ودراسات جدوى اقتصادية متكاملة تحت مظلة رؤية عُمان 2040. كيف أساعدك اليوم في مشروعك؟`;
   }
+  if (clean.includes("جدوى") || clean.includes("رأس مال") || clean.includes("ميزانية") || clean.includes("تكاليف") || clean.includes("أرباح")) {
+    return `يسرّني تقديم التحليل المالي لمشروعك بالريال العُماني (OMR):
+- رأس المال التقديري: 4,500 ر.ع.
+- نقطة التعادل: 90 وحدة شهرياً (1,080 ر.ع. لتغطية المصاريف).
+- صافي الربح المتوقع: 620 ر.ع. شهرياً.
 
-  if (clean.includes("متجر") || clean.includes("معرض") || clean.includes("بوث") || clean.includes("تصوير") || clean.includes("منتج")) {
-    return `خدمة التدشين الفوري للمتاجر مصممة خصيصاً للبوثات والمعارض! يمكنك تصوير أي منتج بكاميرا هاتفك، وسيقوم الذكاء الاصطناعي فوراً بتوليد اسم ابتكاري، وصف تسويقي، وسعر مقترح بالريال العماني لتدشين متجرك خلال ثوانٍ معدودة. هل تود تجربة رفع صورة منتجك الآن؟`;
-  }
-
-  if (clean.includes("جدوى") || clean.includes("رأس مال") || clean.includes("ميزانية") || clean.includes("تكاليف") || clean.includes("أرباح") || clean.includes("تعادل")) {
-    return `يسعدني إعداد دراسة الجدوى واحتساب نقطة التعادل بدقة بالريال العُماني (OMR). إليك التقدير المالي الأولي لمشروعك:
-- إجمالي رأس المال التأسيسي: 4,500 ر.ع.
-- نقطة التعادل الشهرية: 90 وحدة (مبيعات بقيمة 1,080 ر.ع.).
-- صافي الربح الشهري المتوقع: 620 ر.ع.
-
-تم تحديث لوحة المؤشرات البيانية أدناه. هل تود تعديل تكاليف المشروع أو أسعار البيع؟
+تم تحديث لوحة المؤشرات البيانية في الشاشة أمامك. هل تود استفساراً حول أي بند؟
 \`\`\`json
 {
   "economicData": {
-    "projectName": "دراسة جدوى منصة مُنتجي",
+    "projectName": "مشروع وطني عُماني",
     "currency": "ر.ع.",
     "totalCapitalOMR": 4500,
     "breakEvenUnits": 90,
@@ -127,9 +99,9 @@ function getFallbackAwniResponse(message: string): string {
     "expectedProfitOMR": 620,
     "capitalAllocation": [
       { "name": "المعدات والتجهيز", "amount": 1900 },
-      { "name": "المواد الخام والتغليف", "amount": 1300 },
+      { "name": "المواد والتغليف", "amount": 1300 },
       { "name": "التسويق والهوية", "amount": 800 },
-      { "name": "التراخيص والاحتياطي", "amount": 500 }
+      { "name": "التراخيص والاحتياط", "amount": 500 }
     ],
     "budgetBreakdown": [
       { "name": "تكاليف ثابتة", "value": 35 },
@@ -138,22 +110,12 @@ function getFallbackAwniResponse(message: string): string {
     ]
   }
 }
-\`\`\`
-`;
+\`\`\``;
   }
-
-  if (clean.includes("تسعير") || clean.includes("سعر")) {
-    return `خاصية "التسعير الذكي" في منصة مُنتجي تحميك من عشوائية التسعير؛ حيث نقوم بتحليل تكاليف المواد وطبيعة السوق المحلي لاقتراح سعر دقيق بثلاث خانات عشرية بالريال العماني يضمن لك هامش ربح عادلاً يناسب المستهلك العماني. ما هو منتجك لنقترح له سعراً مدروساً؟`;
-  }
-
-  if (clean.includes("ريادة") || clean.includes("قرض") || clean.includes("بنك التنمية") || clean.includes("ترخيص")) {
-    return `منصة مُنتجي ترشدك للحصول على "بطاقة ريادة 2026" التي تمنحك إعفاءات وأولوية 10% في المناقصات الحكومية، بالإضافة إلى ترخيص الأعمال المنزلية إلكترونياً وقروض بنك التنمية العُماني بفائدة 0%. هل تحب أن أوجّهك لخطوات التقديم؟`;
-  }
-
-  return `أهلاً بك في جناح منصة مُنتجي بمهرجان العلوم! أنا "عوني"، مستشارك الرقمي جاهز للرد على أي استفسار حول المتاجر الفورية، دراسات الجدوى، أو السوق الوطني العماني. تفضل بطرح سؤالك!`;
+  return `مرحباً بك في جناح منصة مُنتجي بمهرجان العلوم! أنا "عوني"، مستشارك الاقتصادي لخدمات المتاجر الفورية ودراسات الجدوى بالريال العماني. تفضل بسؤالك وسأجيبك فوراً!`;
 }
 
-// Real-time ultra-fast streaming endpoint
+// 1. مسار المحادثة النصية المتدفقة (Streaming)
 app.post("/api/chat-stream", async (req, res) => {
   res.setHeader("Content-Type", "text/event-stream");
   res.setHeader("Cache-Control", "no-cache");
@@ -161,8 +123,9 @@ app.post("/api/chat-stream", async (req, res) => {
 
   const { message, history } = req.body;
   const ai = getAIClient();
+
   if (!message || typeof message !== "string") {
-    res.write(`data: ${JSON.stringify({ chunk: "يا هلا بك! أنا أستمع إليك باهتمام." })}\n\n`);
+    res.write(`data: ${JSON.stringify({ chunk: "يا هلا بك، تفضل بطرح سؤالك." })}\n\n`);
     res.write("data: [DONE]\n\n");
     res.end();
     return;
@@ -187,10 +150,9 @@ app.post("/api/chat-stream", async (req, res) => {
   try {
     if (!ai) {
       const fallback = getFallbackAwniResponse(message);
-      const words = fallback.split(" ");
-      for (const word of words) {
+      for (const word of fallback.split(" ")) {
         res.write(`data: ${JSON.stringify({ chunk: word + " " })}\n\n`);
-        await new Promise((r) => setTimeout(r, 15));
+        await new Promise((r) => setTimeout(r, 20));
       }
       res.write("data: [DONE]\n\n");
       res.end();
@@ -202,8 +164,7 @@ app.post("/api/chat-stream", async (req, res) => {
       contents,
       config: {
         systemInstruction: AWNI_SYSTEM_INSTRUCTION,
-        temperature: 0.6,
-        thinkingConfig: { thinkingLevel: ThinkingLevel.LOW },
+        temperature: 0.7,
       },
     });
 
@@ -217,7 +178,7 @@ app.post("/api/chat-stream", async (req, res) => {
     res.write("data: [DONE]\n\n");
     res.end();
   } catch (err: any) {
-    console.error("Streaming error:", err);
+    console.error("Chat Stream Error:", err);
     const fallback = getFallbackAwniResponse(message);
     res.write(`data: ${JSON.stringify({ chunk: fallback })}\n\n`);
     res.write("data: [DONE]\n\n");
@@ -225,7 +186,7 @@ app.post("/api/chat-stream", async (req, res) => {
   }
 });
 
-// Chat API endpoint
+// 2. مسار المحادثة العادي
 app.post("/api/chat", async (req, res) => {
   try {
     const { message, history } = req.body;
@@ -237,8 +198,7 @@ app.post("/api/chat", async (req, res) => {
     }
 
     if (!ai) {
-      const fallback = getFallbackAwniResponse(message);
-      res.json({ reply: fallback, source: "offline-knowledge" });
+      res.json({ reply: getFallbackAwniResponse(message), source: "offline" });
       return;
     }
 
@@ -253,7 +213,6 @@ app.post("/api/chat", async (req, res) => {
         }
       }
     }
-
     contents.push({
       role: "user",
       parts: [{ text: message }],
@@ -268,20 +227,19 @@ app.post("/api/chat", async (req, res) => {
       },
     });
 
-    const reply = response.text || getFallbackAwniResponse(message);
-    res.json({ reply, source: "gemini-2.5-flash" });
+    res.json({ reply: response.text || getFallbackAwniResponse(message), source: "gemini-2.5-flash" });
   } catch (err: any) {
-    console.error("Gemini Chat Error:", err);
-    const fallback = getFallbackAwniResponse(req.body?.message || "");
-    res.json({ reply: fallback, error: err.message, source: "fallback" });
+    console.error("Chat Error:", err);
+    res.json({ reply: getFallbackAwniResponse(req.body?.message || ""), error: err.message });
   }
 });
 
-// TTS API endpoint
+// 3. مسار تحويل النص إلى صوت (TTS) مع معالجة ذكية تضمن النطق دائماً
 app.post("/api/tts", async (req, res) => {
   try {
     const { text } = req.body;
     const ai = getAIClient();
+
     if (!text || typeof text !== "string") {
       res.status(400).json({ error: "Text is required" });
       return;
@@ -294,38 +252,39 @@ app.post("/api/tts", async (req, res) => {
       return;
     }
 
-    const ttsResponse = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
-      contents: [
-        {
-          role: "user",
-          parts: [{ text: cleanText }],
-        },
-      ],
-      config: {
-        responseModalities: ["AUDIO"],
-        speechConfig: {
-          voiceConfig: {
-            prebuiltVoiceConfig: { voiceName: "Fenrir" },
+    try {
+      // تجربة استدعاء موديل توليد الصوت عبر Gemini
+      const ttsResponse = await ai.models.generateContent({
+        model: "gemini-2.5-flash-lite-preview-02-05",
+        contents: [{ role: "user", parts: [{ text: cleanText }] }],
+        config: {
+          responseModalities: ["AUDIO"],
+          speechConfig: {
+            voiceConfig: {
+              prebuiltVoiceConfig: { voiceName: "Fenrir" },
+            },
           },
         },
-      },
-    });
+      });
 
-    const audioBase64 = ttsResponse.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
-
-    if (audioBase64) {
-      res.json({ audioBase64, mimeType: "audio/wav" });
-    } else {
-      res.json({ audioBase64: null, useWebSpeech: true });
+      const audioBase64 = ttsResponse.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
+      if (audioBase64) {
+        res.json({ audioBase64, mimeType: "audio/wav" });
+        return;
+      }
+    } catch (apiTtsErr) {
+      console.warn("API TTS unavailable, falling back to WebSpeech:", apiTtsErr);
     }
+
+    // إذا لم يتوفر ملف صوتي خام من الـ API، نوجه المتصفح فوراً لنطقه عبر المتصفح
+    res.json({ audioBase64: null, useWebSpeech: true });
   } catch (err: any) {
-    console.warn("TTS fallback to Web Speech:", err?.message);
+    console.warn("TTS Error, fallback to WebSpeech:", err?.message);
     res.json({ audioBase64: null, useWebSpeech: true });
   }
 });
 
-// Feasibility Advisor Analysis endpoint
+// 4. مسار دراسات الجدوى الاقتصادية
 app.post("/api/feasibility-review", async (req, res) => {
   try {
     const { projectName, fixedCosts, variableCost, sellingPrice, monthlyTarget } = req.body;
@@ -341,59 +300,38 @@ app.post("/api/feasibility-review", async (req, res) => {
     const breakEvenRevenue = breakEvenUnits !== null ? breakEvenUnits * sp : null;
     const expectedProfit = unitMargin > 0 ? (mt * sp) - (fc + (mt * vc)) : 0;
 
-    if (!ai) {
-      const summary = `يا هلا بك! راجعت ميزانية مشروع "${projectName || "مشروعك العُماني"}":
-- هامش ربح الوحدة: ${unitMargin.toFixed(2)} ر.ع.
-- نقطة التعادل: ${breakEvenUnits ? `${breakEvenUnits} وحدة شهرياً (${breakEvenRevenue?.toFixed(2)} ر.ع.)` : "يرجى التأكد من أن سعر البيع أعلى من التكلفة"}.
-- الربح المتوقع عند بيع ${mt} وحدة: ${expectedProfit.toFixed(2)} ر.ع.
-
-نصيحتي لك كعوني: استثمر في التسويق الرقمي عبر منصة مُنتجي الوطنية لزيادة المبيعات.`;
-
-      res.json({
-        unitMargin,
-        breakEvenUnits,
-        breakEvenRevenue,
-        expectedProfit,
-        reviewText: summary,
-      });
-      return;
-    }
-
-    const prompt = `أنت "عوني"، المستشار الاقتصادي لمنصة مُنتجي العمانية في مهرجان العلوم. 
+    const prompt = `أنت "عوني"، المستشار الاقتصادي لمنصة مُنتجي في مهرجان العلوم. 
 راجع بيانات الجدوى الاقتصادية لمشروع "${projectName || "مشروع عُماني"}":
 - التكاليف الثابتة الشهرية: ${fc} ر.ع.
 - التكلفة المتغيرة للوحدة: ${vc} ر.ع.
 - سعر بيع الوحدة: ${sp} ر.ع.
-- نقطة التعادل المحسوبة: ${breakEvenUnits} وحدة (${breakEvenRevenue?.toFixed(2)} ر.ع.)
+- نقطة التعادل: ${breakEvenUnits} وحدة (${breakEvenRevenue?.toFixed(2)} ر.ع.)
 - المبيعات المستهدفة: ${mt} وحدة
 - صافي الربح المتوقع: ${expectedProfit.toFixed(2)} ر.ع.
 
-قدم تقييماً شفهياً مقتضباً وذكياً بنكهة عمانية محفزة (3 فقرات قصيرة):
-1) رأيك في هامش الربحية ونقطة التعادل.
-2) نصيحة استراتيجية عمانية للاستفادة من منصة مُنتجي وبطاقة ريادة 2026.
-3) سؤال ختامي تفاعلي للزوار.`;
+قدم تحليلاً شفهياً موجزاً ومشجعاً باللغة العربية الفصحى يوضح متى يصل المشروع لنقطة التعادل وكيف يستفيد من بطاقة ريادة وسوق منصة مُنتجي.`;
 
     let reviewText = "";
-    try {
-      const response = await ai.models.generateContent({
-        model: "gemini-2.5-flash",
-        contents: prompt,
-        config: {
-          systemInstruction: AWNI_SYSTEM_INSTRUCTION,
-          temperature: 0.6,
-        },
-      });
-      reviewText = response.text || "";
-    } catch (genErr) {
-      console.warn("Feasibility AI review fallback:", genErr);
+    if (ai) {
+      try {
+        const response = await ai.models.generateContent({
+          model: "gemini-2.5-flash",
+          contents: prompt,
+          config: {
+            systemInstruction: AWNI_SYSTEM_INSTRUCTION,
+            temperature: 0.6,
+          },
+        });
+        reviewText = response.text || "";
+      } catch (e) {
+        console.warn("Feasibility AI error:", e);
+      }
     }
 
     if (!reviewText) {
-      reviewText = `يا هلا والله بك! راجعت ميزانية مشروع "${projectName || "مشروعك العُماني"}":
-- نقطة التعادل: تحتاج بيع ${breakEvenUnits} وحدة شهرياً (${breakEvenRevenue?.toFixed(2)} ر.ع.) لتغطية التكاليف.
-- صافي الربح الشهري المتوقع: ${expectedProfit.toFixed(2)} ر.ع.
-
-نصيحة عوني: استفد من ترخيص الأعمال المنزلية وبطاقة ريادة 2026، واعرض منتجاتك في سوق مُنتجي الوطني.`;
+      reviewText = `يا هلا بك! راجعت ميزانية مشروع "${projectName || "مشروعك"}":
+تحتاج إلى بيع ${breakEvenUnits || 0} وحدة شهرياً (${breakEvenRevenue?.toFixed(2) || 0} ر.ع.) لتغطية التكاليف كاملة والوصول لنقطة التعادل.
+الربح الصافي المتوقع عند تحقيق الهدف هو ${expectedProfit.toFixed(2)} ر.ع.`;
     }
 
     res.json({
@@ -409,10 +347,9 @@ app.post("/api/feasibility-review", async (req, res) => {
   }
 });
 
-// Setup Vite or static serving and WebSocket server for Gemini Live API
+// 5. مسار الـ WebSocket للجلسة الصوتية الحية (Live Voice API)
 async function startServer() {
   const server = http.createServer(app);
-
   const wss = new WebSocketServer({ server, path: "/live" });
 
   wss.on("connection", async (clientWs: WebSocket) => {
@@ -426,8 +363,9 @@ async function startServer() {
     }
 
     try {
+      // موديل الجلسات الصوتية الحية ثنائية الاتجاه
       const session = await ai.live.connect({
-        model: "gemini-2.5-flash",
+        model: "gemini-2.0-flash-exp",
         config: {
           responseModalities: [Modality.AUDIO],
           speechConfig: {
@@ -497,7 +435,7 @@ async function startServer() {
       });
 
       clientWs.on("close", () => {
-        console.log("Client disconnected from Live voice session");
+        console.log("Client disconnected from Live session");
         try {
           session.close();
         } catch {}
@@ -527,7 +465,7 @@ async function startServer() {
   }
 
   server.listen(PORT, "0.0.0.0", () => {
-    console.log(`🇴🇲 عوني - منصة مُنتجي (مهرجان العلوم) server running on port ${PORT}`);
+    console.log(`🇴🇲 عوني - منصة مُنتجي server running on port ${PORT}`);
   });
 }
 
